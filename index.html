@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unified Portfolio Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060c16;
+      --bg1: #0f172a;
+      --bg2: #1e293b;
+      --border: #1e293b;
+      --text: #f8fafc;
+      --muted: #64748b;
+      --sub: #94a3b8;
+      --orange: #f97316;
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --cyan: #06b6d4;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0d1f3c 0%, #0f172a 60%, #1a0a2e 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 32px 0;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .header-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .brand-label { color: var(--muted); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+    h1 { font-size: 26px; font-weight: 900; letter-spacing: -0.8px; margin-top: 4px; }
+
+    .networth-block { text-align: right; }
+    .nw-label { color: var(--muted); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+    .nw-value { font-size: 30px; font-weight: 900; letter-spacing: -1px; }
+    .nw-return { color: var(--green); font-size: 14px; font-weight: 700; margin-top: 2px; }
+
+    /* Refresh Button */
+    .refresh-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 10px 20px; font-size: 13px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.3px;
+      box-shadow: 0 4px 15px rgba(249,115,22,0.3);
+      transition: all 0.2s; margin-top: 10px;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .refresh-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(249,115,22,0.4); }
+    .refresh-btn:active { transform: translateY(0); }
+    .refresh-btn svg { transition: transform 0.5s; }
+    .refresh-btn.spinning svg { animation: spin 0.8s linear; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; max-width: 1200px; margin: 20px auto 0; }
+    .tab {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 20px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .tab.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+    .tab:hover:not(.active) { border-color: var(--sub); color: var(--sub); }
+
+    /* Main content */
+    .main { max-width: 1200px; margin: 0 auto; padding: 28px 32px 40px; }
+
+    /* Stat grid */
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card {
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      border: 1px solid var(--border); border-radius: 16px;
+      padding: 20px 24px; position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: ''; position: absolute; top: 0; right: 0;
+      width: 80px; height: 80px; border-radius: 0 16px 0 80px;
+      opacity: 0.08;
+    }
+    .stat-card:nth-child(1)::before { background: var(--blue); }
+    .stat-card:nth-child(2)::before { background: var(--green); }
+    .stat-card:nth-child(3)::before { background: var(--orange); }
+    .stat-card:nth-child(4)::before { background: var(--green); }
+    .stat-icon { font-size: 20px; margin-bottom: 8px; }
+    .stat-label { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+    .stat-value { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .stat-sub { font-size: 13px; font-weight: 600; margin-top: 4px; }
+
+    /* Cards */
+    .card {
+      background: var(--bg1); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px;
+    }
+    .card-title { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 20px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+
+    /* Investment bars */
+    .inv-row { margin-bottom: 14px; }
+    .inv-meta { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .inv-name { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #e2e8f0; }
+    .inv-val { font-size: 13px; font-weight: 700; }
+    .inv-pct { font-size: 11px; }
+    .inv-bar-bg { height: 4px; background: var(--bg2); border-radius: 4px; }
+    .inv-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+
+    /* Sector cards */
+    .sector-card {
+      background: var(--bg1); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px;
+    }
+    .sector-name { font-size: 12px; color: var(--sub); margin-bottom: 4px; }
+    .sector-val { font-size: 17px; font-weight: 800; }
+    .sector-footer { display: flex; justify-content: space-between; margin-top: 6px; }
+    .sector-alloc { font-size: 11px; color: var(--muted); }
+    .sector-ret { font-size: 12px; font-weight: 600; color: var(--green); }
+
+    /* Market cap cards */
+    .cap-card {
+      background: var(--bg1); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px;
+    }
+    .cap-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+    .cap-val { font-size: 24px; font-weight: 900; margin-bottom: 6px; }
+    .cap-pct { font-size: 13px; color: var(--sub); margin-bottom: 8px; }
+    .cap-ret-row { display: flex; align-items: center; gap: 6px; }
+    .cap-ret-label { font-size: 11px; color: var(--muted); }
+    .cap-ret-val { font-size: 14px; font-weight: 700; color: var(--green); }
+
+    /* Holdings table */
+    .holding-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 0;
+    }
+    .holding-row + .holding-row { border-top: 1px solid var(--border); }
+    .holding-rank {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .holding-info { margin-left: 14px; flex: 1; }
+    .holding-name { font-size: 14px; font-weight: 700; }
+    .holding-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .holding-right { text-align: right; }
+    .holding-val { font-size: 16px; font-weight: 800; }
+    .holding-share { font-size: 11px; color: var(--sub); margin-top: 2px; }
+
+    /* ETF rows */
+    .etf-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0;
+    }
+    .etf-row + .etf-row { border-top: 1px solid var(--border); }
+    .etf-name { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+    .etf-units { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .etf-val { font-size: 14px; font-weight: 700; }
+
+    /* Summary rows */
+    .sum-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0;
+    }
+    .sum-row + .sum-row { border-top: 1px solid var(--border); }
+    .sum-label { font-size: 13px; color: var(--sub); }
+
+    /* Tab panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Pie legend */
+    .pie-wrap { display: flex; align-items: center; gap: 20px; }
+    .pie-legend { flex: 1; }
+    .legend-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+    .legend-name { font-size: 12px; color: var(--sub); margin-left: 8px; flex: 1; }
+    .legend-pct { font-size: 12px; font-weight: 700; }
+
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed; inset: 0; background: rgba(6,12,22,0.8);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 999; backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .loading-overlay.show { opacity: 1; pointer-events: all; }
+    .loading-spinner {
+      width: 48px; height: 48px; border: 3px solid var(--border);
+      border-top-color: var(--orange); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin-bottom: 16px;
+    }
+    .loading-text { color: var(--sub); font-size: 14px; font-weight: 600; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--bg1); border: 1px solid var(--green);
+      color: var(--green); padding: 12px 20px; border-radius: 10px;
+      font-size: 13px; font-weight: 600;
+      transform: translateY(80px); opacity: 0;
+      transition: all 0.3s; z-index: 100;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    canvas { max-width: 100%; }
+
+    @media (max-width: 768px) {
+      .stat-grid, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+      .header { padding: 16px 16px 0; }
+      .main { padding: 20px 16px; }
+      h1 { font-size: 20px; }
+      .nw-value { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Refreshing portfolio data…</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ Portfolio data refreshed</div>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="brand">
+        <div class="dot"></div>
+        <span class="brand-label">INDmoney Portfolio</span>
+      </div>
+      <h1>Unified Dashboard</h1>
+      <button class="refresh-btn" id="refreshBtn" onclick="refreshData()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        Refresh Data
+      </button>
+    </div>
+    <div class="networth-block">
+      <div class="nw-label">Net Worth</div>
+      <div class="nw-value" id="nwValue">₹12.57L</div>
+      <div class="nw-return" id="nwReturn">+₹6.58L (+109.69%)</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview', this)">Overview</button>
+    <button class="tab" onclick="switchTab('sectors', this)">Sectors</button>
+    <button class="tab" onclick="switchTab('marketcap', this)">Market Cap</button>
+    <button class="tab" onclick="switchTab('holdings', this)">Holdings</button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- OVERVIEW -->
+  <div class="tab-panel active" id="tab-overview">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-label">Total Invested</div>
+        <div class="stat-value">₹5.99L</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-label">Current Value</div>
+        <div class="stat-value">₹12.57L</div>
+        <div class="stat-sub" style="color:var(--green)">All Assets</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🚀</div>
+        <div class="stat-label">Total Returns</div>
+        <div class="stat-value">₹6.58L</div>
+        <div class="stat-sub" style="color:var(--orange)">+109.69%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🛡️</div>
+        <div class="stat-label">Liabilities</div>
+        <div class="stat-value">₹0</div>
+        <div class="stat-sub" style="color:var(--green)">Debt Free 🎉</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Asset Allocation</div>
+        <div class="pie-wrap">
+          <canvas id="assetPie" width="160" height="160" style="width:160px;height:160px;flex-shrink:0"></canvas>
+          <div class="pie-legend" id="assetLegend"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">By Investment Type</div>
+        <div id="investmentBars"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTORS -->
+  <div class="tab-panel" id="tab-sectors">
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">Sector-wise Value</div>
+      <canvas id="sectorBar" height="300"></canvas>
+    </div>
+    <div class="grid-3" id="sectorCards"></div>
+  </div>
+
+  <!-- MARKET CAP -->
+  <div class="tab-panel" id="tab-marketcap">
+    <div class="grid-4" id="capCards"></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Cap Distribution</div>
+        <canvas id="capPie" height="220"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-title">Return by Cap</div>
+        <canvas id="capBar" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOLDINGS -->
+  <div class="tab-panel" id="tab-holdings">
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">Top 10 Stock Holdings (Zerodha)</div>
+      <div id="holdingsList"></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">ETF Holdings</div>
+        <div id="etfList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Portfolio Summary</div>
+        <div id="summaryList"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const DATA = {
+  assets: [
+    { name:"Indian Equity", value:650794.63, pct:51.77, color:"#f97316" },
+    { name:"Retirement",    value:269168,    pct:21.41, color:"#3b82f6" },
+    { name:"ESOPs/RSU",     value:248057.38, pct:19.73, color:"#8b5cf6" },
+    { name:"Debt",          value:50819.74,  pct:4.04,  color:"#10b981" },
+    { name:"Global Equity", value:17701.84,  pct:1.41,  color:"#f59e0b" },
+    { name:"Silver",        value:11958.99,  pct:0.95,  color:"#94a3b8" },
+    { name:"Liquid",        value:7237.75,   pct:0.58,  color:"#06b6d4" },
+    { name:"Gold",          value:1251.86,   pct:0.10,  color:"#fbbf24" },
+  ],
+  investments: [
+    { label:"Mutual Funds",   value:363083.9,  invested:312984.35, pct:16.0,  icon:"◈", color:"#f97316" },
+    { label:"Indian Stocks",  value:356070.28, invested:null,      pct:null,  icon:"◉", color:"#8b5cf6" },
+    { label:"EPF",            value:269168,    invested:269168,    pct:0,     icon:"◎", color:"#3b82f6" },
+    { label:"ESOPs/RSUs",     value:248057.38, invested:null,      pct:null,  icon:"◆", color:"#a855f7" },
+    { label:"US Stocks",      value:17701.84,  invested:14387.52,  pct:23.04, icon:"◇", color:"#f59e0b" },
+  ],
+  sectors: [
+    { sector:"Financial Services",  value:107398.38, pct:28.20, ret:16.07, color:"#f97316" },
+    { sector:"Consumer Cyclical",   value:49335.84,  pct:12.96, ret:19.06, color:"#ef4444" },
+    { sector:"Healthcare",          value:38685.58,  pct:10.16, ret:19.49, color:"#8b5cf6" },
+    { sector:"Industrials",         value:38210.80,  pct:10.03, ret:23.48, color:"#3b82f6" },
+    { sector:"Energy",              value:36213.96,  pct:9.51,  ret:12.78, color:"#10b981" },
+    { sector:"Utilities",           value:28077.73,  pct:7.37,  ret:11.91, color:"#f59e0b" },
+    { sector:"Corporate",           value:23513.69,  pct:6.18,  ret:14.17, color:"#06b6d4" },
+    { sector:"Basic Materials",     value:22949.98,  pct:6.03,  ret:14.52, color:"#ec4899" },
+    { sector:"Government",          value:21493.32,  pct:5.64,  ret:15.58, color:"#84cc16" },
+    { sector:"Consumer Defensive",  value:20167.10,  pct:5.30,  ret:12.46, color:"#64748b" },
+    { sector:"Comm. Services",      value:15108.91,  pct:3.97,  ret:14.60, color:"#14b8a6" },
+    { sector:"Technology",          value:14253.62,  pct:3.74,  ret:20.09, color:"#a855f7" },
+    { sector:"Real Estate",         value:5012.61,   pct:1.32,  ret:10.34, color:"#fb923c" },
+  ],
+  marketCap: [
+    { name:"Large Cap", value:260027.26, pct:78.80, ret:21.79, color:"#f97316" },
+    { name:"Small Cap", value:63926.82,  pct:19.37, ret:6.33,  color:"#8b5cf6" },
+    { name:"Mega Cap",  value:5482.52,   pct:1.66,  ret:27.07, color:"#f59e0b" },
+    { name:"Mid Cap",   value:529.41,    pct:0.16,  ret:23.36, color:"#10b981" },
+  ],
+  topStocks: [
+    { name:"Eternal Ltd",            value:25861.05, cap:"Large" },
+    { name:"Premier Energies",       value:20660,    cap:"Mid"   },
+    { name:"Natco Pharma",           value:17251.5,  cap:"Small" },
+    { name:"AWL Agri Business",      value:14546,    cap:"Small" },
+    { name:"National Peroxide",      value:14263.7,  cap:"Small" },
+    { name:"Jaykay Enterprises",     value:14040.8,  cap:"Small" },
+    { name:"Adani Power",            value:11456,    cap:"Large" },
+    { name:"Anant Raj",              value:10576.35, cap:"Small" },
+    { name:"PCBL Chemical",          value:9175.5,   cap:"Small" },
+    { name:"Yes Bank",               value:4293.22,  cap:"Mid"   },
+  ],
+  etfs: [
+    { name:"Nippon India Silver ETF",            value:11958.99, units:51  },
+    { name:"Zerodha Nifty 1D Rate Liquid ETF",   value:4328.96,  units:38  },
+    { name:"Nippon Nifty Next 50 BeES",          value:2319.21,  units:3   },
+    { name:"Nippon Nifty 50 BeES",               value:1378.65,  units:5   },
+    { name:"Zerodha Gold ETF",                   value:1251.86,  units:53  },
+  ],
+};
+
+// ─── HELPERS ───────────────────────────────────────────────────────────────
+const fmt = n => n >= 1e7 ? `₹${(n/1e7).toFixed(2)}Cr`
+               : n >= 1e5 ? `₹${(n/1e5).toFixed(2)}L`
+               : `₹${n.toFixed(0)}`;
+const fmtPct = n => `${n>=0?"+":""}${n.toFixed(2)}%`;
+
+// ─── CHART INSTANCES ───────────────────────────────────────────────────────
+let charts = {};
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+// ─── RENDER FUNCTIONS ─────────────────────────────────────────────────────
+
+function renderOverview() {
+  // Asset pie
+  destroyChart('assetPie');
+  const ctx1 = document.getElementById('assetPie').getContext('2d');
+  charts.assetPie = new Chart(ctx1, {
+    type: 'doughnut',
+    data: {
+      labels: DATA.assets.map(a => a.name),
+      datasets: [{ data: DATA.assets.map(a => a.value), backgroundColor: DATA.assets.map(a => a.color), borderWidth: 2, borderColor: '#0f172a' }]
+    },
+    options: {
+      cutout: '60%', plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.raw)} (${ctx.parsed.toFixed(1)}%)` }
+      }},
+      animation: { duration: 800 }
+    }
+  });
+
+  // Legend
+  const leg = document.getElementById('assetLegend');
+  leg.innerHTML = DATA.assets.map(a => `
+    <div class="legend-row">
+      <div class="legend-dot" style="background:${a.color}"></div>
+      <span class="legend-name">${a.name}</span>
+      <span class="legend-pct">${a.pct.toFixed(1)}%</span>
+    </div>`).join('');
+
+  // Investment bars
+  const bars = document.getElementById('investmentBars');
+  const total = 1256990.19;
+  bars.innerHTML = DATA.investments.map(inv => `
+    <div class="inv-row">
+      <div class="inv-meta">
+        <div class="inv-name"><span>${inv.icon}</span> ${inv.label}</div>
+        <div style="text-align:right">
+          <div class="inv-val">${fmt(inv.value)}</div>
+          ${inv.pct !== null ? `<div class="inv-pct" style="color:var(--green)">${fmtPct(inv.pct)}</div>` : ''}
+        </div>
+      </div>
+      <div class="inv-bar-bg"><div class="inv-bar-fill" style="width:${(inv.value/total*100).toFixed(1)}%;background:${inv.color}"></div></div>
+    </div>`).join('');
+}
+
+function renderSectors() {
+  const s = DATA.sectors;
+  destroyChart('sectorBar');
+  const ctx = document.getElementById('sectorBar').getContext('2d');
+  charts.sectorBar = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: s.map(x => x.sector),
+      datasets: [{ data: s.map(x => x.value), backgroundColor: s.map(x => x.color), borderRadius: 6, borderWidth: 0 }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: ctx => ` ${fmt(ctx.raw)} · Return: ${fmtPct(s[ctx.dataIndex].ret)}` }
+      }},
+      scales: {
+        x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', callback: v => `${(v/1000).toFixed(0)}K` } },
+        y: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } }
+      },
+      animation: { duration: 800 }
+    }
+  });
+
+  const cards = document.getElementById('sectorCards');
+  cards.innerHTML = s.slice(0, 9).map((sc, i) => `
+    <div class="sector-card" style="border-left:3px solid ${sc.color}">
+      <div class="sector-name">${sc.sector}</div>
+      <div class="sector-val">${fmt(sc.value)}</div>
+      <div class="sector-footer">
+        <span class="sector-alloc">${sc.pct.toFixed(1)}% of equity</span>
+        <span class="sector-ret">${fmtPct(sc.ret)}</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderMarketCap() {
+  const mc = DATA.marketCap;
+
+  const cards = document.getElementById('capCards');
+  const topBorders = ['#f97316','#8b5cf6','#f59e0b','#10b981'];
+  cards.innerHTML = mc.map((c, i) => `
+    <div class="cap-card" style="border-top:3px solid ${c.color}">
+      <div class="cap-label">${c.name}</div>
+      <div class="cap-val">${fmt(c.value)}</div>
+      <div class="cap-pct">${c.pct.toFixed(2)}% of MF equity</div>
+      <div class="cap-ret-row">
+        <span class="cap-ret-label">Return</span>
+        <span class="cap-ret-val">${fmtPct(c.ret)}</span>
+      </div>
+    </div>`).join('');
+
+  destroyChart('capPie');
+  const cp = document.getElementById('capPie').getContext('2d');
+  charts.capPie = new Chart(cp, {
+    type: 'doughnut',
+    data: {
+      labels: mc.map(c => c.name),
+      datasets: [{ data: mc.map(c => c.value), backgroundColor: mc.map(c => c.color), borderWidth: 2, borderColor: '#0f172a' }]
+    },
+    options: { cutout: '55%', plugins: { legend: { display: true, position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } } }, animation: { duration: 800 } }
+  });
+
+  destroyChart('capBar');
+  const cb = document.getElementById('capBar').getContext('2d');
+  charts.capBar = new Chart(cb, {
+    type: 'bar',
+    data: {
+      labels: mc.map(c => c.name),
+      datasets: [{ data: mc.map(c => c.ret), backgroundColor: mc.map(c => c.color), borderRadius: 8, borderWidth: 0 }]
+    },
+    options: {
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw.toFixed(2)}%` } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
+        y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', callback: v => `${v}%` } }
+      },
+      animation: { duration: 800 }
+    }
+  });
+}
+
+function renderHoldings() {
+  const rankColors = ['#f97316','#ef4444','#8b5cf6','#3b82f6','#10b981','#f59e0b','#06b6d4','#ec4899','#a855f7','#14b8a6'];
+  const totalStocks = 356070.28;
+
+  document.getElementById('holdingsList').innerHTML = DATA.topStocks.map((s, i) => `
+    <div class="holding-row">
+      <div class="holding-rank" style="background:${rankColors[i]}">${i+1}</div>
+      <div class="holding-info">
+        <div class="holding-name">${s.name}</div>
+        <div class="holding-meta">${s.cap} Cap · Zerodha</div>
+      </div>
+      <div class="holding-right">
+        <div class="holding-val">${fmt(s.value)}</div>
+        <div class="holding-share">${((s.value/totalStocks)*100).toFixed(1)}% of stocks</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('etfList').innerHTML = DATA.etfs.map(e => `
+    <div class="etf-row">
+      <div>
+        <div class="etf-name">${e.name}</div>
+        <div class="etf-units">${e.units} units</div>
+      </div>
+      <div class="etf-val">${fmt(e.value)}</div>
+    </div>`).join('');
+
+  const summaryItems = [
+    { label:"Total Stocks",   value:"60+",         color:"#f97316" },
+    { label:"Broker",         value:"Zerodha",      color:"#3b82f6" },
+    { label:"Mutual Funds",   value:"Active",       color:"#8b5cf6" },
+    { label:"EPF Balance",    value:"₹2.69L",      color:"#10b981" },
+    { label:"ESOPs/RSUs",     value:"₹2.48L",      color:"#a855f7" },
+    { label:"Liabilities",    value:"₹0",           color:"#10b981" },
+  ];
+  document.getElementById('summaryList').innerHTML = summaryItems.map(s => `
+    <div class="sum-row">
+      <span class="sum-label">${s.label}</span>
+      <span style="font-size:14px;font-weight:700;color:${s.color}">${s.value}</span>
+    </div>`).join('');
+}
+
+// ─── TAB SWITCHING ─────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  // Render lazily
+  if (name === 'sectors') renderSectors();
+  if (name === 'marketcap') renderMarketCap();
+  if (name === 'holdings') renderHoldings();
+}
+
+// ─── REFRESH ───────────────────────────────────────────────────────────────
+function refreshData() {
+  const btn = document.getElementById('refreshBtn');
+  const overlay = document.getElementById('loadingOverlay');
+  const toast = document.getElementById('toast');
+
+  btn.classList.add('spinning');
+  overlay.classList.add('show');
+
+  setTimeout(() => {
+    // Re-render all visible charts
+    renderOverview();
+    const activeTab = document.querySelector('.tab-panel.active').id.replace('tab-', '');
+    if (activeTab === 'sectors') renderSectors();
+    if (activeTab === 'marketcap') renderMarketCap();
+    if (activeTab === 'holdings') renderHoldings();
+
+    overlay.classList.remove('show');
+    btn.classList.remove('spinning');
+
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }, 1800);
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+renderOverview();
+</script>
+</body>
+</html>
