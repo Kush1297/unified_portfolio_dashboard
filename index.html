@@ -1,653 +1,842 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unified Portfolio Dashboard</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Kush's Portfolio</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Sora',sans-serif;background:#07101d;color:#e2e8f0;min-height:100vh}
+.mono{font-family:'JetBrains Mono',monospace}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:4px}
 
-    :root {
-      --bg: #060c16;
-      --bg1: #0f172a;
-      --bg2: #1e293b;
-      --border: #1e293b;
-      --text: #f8fafc;
-      --muted: #64748b;
-      --sub: #94a3b8;
-      --orange: #f97316;
-      --blue: #3b82f6;
-      --purple: #8b5cf6;
-      --green: #10b981;
-      --amber: #f59e0b;
-      --cyan: #06b6d4;
-    }
+/* ── Cards ── */
+.card{background:linear-gradient(145deg,#0c1d33,#091525);border:1px solid rgba(100,160,255,0.07);border-radius:16px}
+.card-p{padding:16px}
+.hero-card{background:linear-gradient(145deg,#0f1e38,#0b1528,#110c25);border:1px solid rgba(99,102,241,0.2);border-radius:16px;box-shadow:0 0 40px rgba(99,102,241,0.07)}
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+/* ── Layout ── */
+.main{max-width:600px;margin:0 auto}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.flex{display:flex}.frow{display:flex;align-items:center}.fcol{display:flex;flex-direction:column}
+.jbet{justify-content:space-between}.jcen{justify-content:center}.astart{align-items:flex-start}
+.gap2{gap:8px}.gap3{gap:12px}.gap4{gap:16px}
+.f1{flex:1}.shrink0{flex-shrink:0}.minw0{min-width:0}
+.wrap{flex-wrap:wrap}
+.tr{text-align:right}.tc{text-align:center}
+.trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mb2{margin-bottom:8px}.mb3{margin-bottom:12px}.mb4{margin-bottom:16px}.mb5{margin-bottom:20px}
+.mt2{margin-top:8px}.mt3{margin-top:12px}.mt4{margin-top:16px}
+.pr2{padding-right:8px}
+.ovx{overflow-x:auto}
 
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, #0d1f3c 0%, #0f172a 60%, #1a0a2e 100%);
-      border-bottom: 1px solid var(--border);
-      padding: 24px 32px 0;
-      position: sticky; top: 0; z-index: 50;
-    }
-    .header-top {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      max-width: 1200px; margin: 0 auto;
-    }
-    .brand { display: flex; align-items: center; gap: 10px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
-    .brand-label { color: var(--muted); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
-    h1 { font-size: 26px; font-weight: 900; letter-spacing: -0.8px; margin-top: 4px; }
+/* ── Typography ── */
+.xs{font-size:11px}.sm{font-size:13px}.base{font-size:15px}.lg{font-size:18px}.xl{font-size:22px}.x2l{font-size:28px}
+.fw5{font-weight:500}.fw6{font-weight:600}.fw7{font-weight:700}.fw8{font-weight:800}
+.white{color:#fff}.muted{color:#64748b}.sub{color:#94a3b8}
+.green{color:#10b981}.red{color:#ef4444}.indigo{color:#818cf8}.purple{color:#c084fc}.amber{color:#fbbf24}.cyan{color:#22d3ee}
 
-    .networth-block { text-align: right; }
-    .nw-label { color: var(--muted); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-    .nw-value { font-size: 30px; font-weight: 900; letter-spacing: -1px; }
-    .nw-return { color: var(--green); font-size: 14px; font-weight: 700; margin-top: 2px; }
+/* ── Pills ── */
+.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:11px}
+.pill-lg{padding:5px 12px;font-size:13px}
+.up{background:rgba(16,185,129,.12);color:#10b981}
+.dn{background:rgba(239,68,68,.12);color:#ef4444}
+.fl{background:rgba(100,116,139,.12);color:#94a3b8}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:600}
+.badge-slate{background:rgba(100,116,139,.12);color:#94a3b8}
+.badge-indigo{background:rgba(99,102,241,.12);color:#818cf8}
+.badge-purple{background:rgba(139,92,246,.12);color:#c084fc}
+.badge-orange{background:rgba(249,115,22,.12);color:#fb923c}
+.badge-cyan{background:rgba(6,182,212,.12);color:#22d3ee}
+.badge-green{background:rgba(16,185,129,.1);color:#34d399}
 
-    /* Refresh Button */
-    .refresh-btn {
-      display: flex; align-items: center; gap: 8px;
-      background: linear-gradient(135deg, #f97316, #ea580c);
-      color: #fff; border: none; border-radius: 10px;
-      padding: 10px 20px; font-size: 13px; font-weight: 700;
-      cursor: pointer; letter-spacing: 0.3px;
-      box-shadow: 0 4px 15px rgba(249,115,22,0.3);
-      transition: all 0.2s; margin-top: 10px;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .refresh-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(249,115,22,0.4); }
-    .refresh-btn:active { transform: translateY(0); }
-    .refresh-btn svg { transition: transform 0.5s; }
-    .refresh-btn.spinning svg { animation: spin 0.8s linear; }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/* ── Progress ── */
+.pbar{height:3px;border-radius:99px;background:rgba(255,255,255,.05);overflow:hidden}
+.pfill{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.divider{border:none;border-top:1px solid rgba(255,255,255,.05);margin:12px 0}
 
-    /* Tabs */
-    .tabs { display: flex; gap: 4px; max-width: 1200px; margin: 20px auto 0; }
-    .tab {
-      background: transparent; color: var(--muted);
-      border: 1px solid var(--border); border-radius: 8px;
-      padding: 8px 20px; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .tab.active { background: var(--orange); color: #fff; border-color: var(--orange); }
-    .tab:hover:not(.active) { border-color: var(--sub); color: var(--sub); }
+/* ── Border accents ── */
+.bt-indigo{border-top:2px solid #6366f1}
+.bt-cyan{border-top:2px solid #06b6d4}
+.bt-purple{border-top:2px solid #8b5cf6}
+.bt-amber{border-top:2px solid #f59e0b}
+.bt-green{border-top:2px solid #10b981}
+.bl-acc{border-left:3px solid var(--acc)}
 
-    /* Main content */
-    .main { max-width: 1200px; margin: 0 auto; padding: 28px 32px 40px; }
+/* ── Header ── */
+#hdr{position:sticky;top:0;z-index:50;background:rgba(7,16,29,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.05);padding:14px 16px 0;max-width:100%}
+.hdr-inner{max-width:600px;margin:0 auto}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 7px #10b981;flex-shrink:0}
+.tab-bar{display:flex;gap:4px;padding:4px;border-radius:12px;background:rgba(255,255,255,.04);margin-top:12px}
+.tbtn{flex:1;padding:9px 4px;border-radius:9px;font-size:12px;font-weight:600;color:#64748b;transition:all .2s;border:none;background:none;font-family:'Sora',sans-serif;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbtn.act{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 2px 12px rgba(99,102,241,.3)}
 
-    /* Stat grid */
-    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card {
-      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
-      border: 1px solid var(--border); border-radius: 16px;
-      padding: 20px 24px; position: relative; overflow: hidden;
-    }
-    .stat-card::before {
-      content: ''; position: absolute; top: 0; right: 0;
-      width: 80px; height: 80px; border-radius: 0 16px 0 80px;
-      opacity: 0.08;
-    }
-    .stat-card:nth-child(1)::before { background: var(--blue); }
-    .stat-card:nth-child(2)::before { background: var(--green); }
-    .stat-card:nth-child(3)::before { background: var(--orange); }
-    .stat-card:nth-child(4)::before { background: var(--green); }
-    .stat-icon { font-size: 20px; margin-bottom: 8px; }
-    .stat-label { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
-    .stat-value { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-    .stat-sub { font-size: 13px; font-weight: 600; margin-top: 4px; }
+/* ── Refresh ── */
+.rbtn{display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:12px;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;cursor:pointer;font-family:'Sora',sans-serif;box-shadow:0 2px 12px rgba(99,102,241,.3);transition:transform .15s}
+.rbtn:active{transform:scale(.95)}
+.rbtn svg{transition:transform .5s}
+.rbtn.spin svg{animation:spin .8s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 
-    /* Cards */
-    .card {
-      background: var(--bg1); border: 1px solid var(--border);
-      border-radius: 16px; padding: 24px;
-    }
-    .card-title { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 20px; }
+/* ── Panels ── */
+.panel{display:none;padding:16px 16px 48px}
+.panel.act{display:block}
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+/* ── Donut ── */
+.donut-wrap{position:relative;width:174px;height:174px;margin:0 auto}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
 
-    /* Investment bars */
-    .inv-row { margin-bottom: 14px; }
-    .inv-meta { display: flex; justify-content: space-between; margin-bottom: 6px; }
-    .inv-name { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #e2e8f0; }
-    .inv-val { font-size: 13px; font-weight: 700; }
-    .inv-pct { font-size: 11px; }
-    .inv-bar-bg { height: 4px; background: var(--bg2); border-radius: 4px; }
-    .inv-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+/* ── Row ── */
+.arow{border-radius:14px;margin-bottom:10px;animation:fu .3s ease}
+@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
-    /* Sector cards */
-    .sector-card {
-      background: var(--bg1); border: 1px solid var(--border);
-      border-radius: 12px; padding: 16px 20px;
-    }
-    .sector-name { font-size: 12px; color: var(--sub); margin-bottom: 4px; }
-    .sector-val { font-size: 17px; font-weight: 800; }
-    .sector-footer { display: flex; justify-content: space-between; margin-top: 6px; }
-    .sector-alloc { font-size: 11px; color: var(--muted); }
-    .sector-ret { font-size: 12px; font-weight: 600; color: var(--green); }
+/* ── Filter bar ── */
+.fbar{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px}
+.fbar::-webkit-scrollbar{display:none}
+.fpill{padding:8px 16px;border-radius:99px;font-size:13px;font-weight:600;white-space:nowrap;background:rgba(255,255,255,.05);color:#64748b;border:none;cursor:pointer;font-family:'Sora',sans-serif;transition:all .2s}
+.fpill.act{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
 
-    /* Market cap cards */
-    .cap-card {
-      background: var(--bg1); border: 1px solid var(--border);
-      border-radius: 16px; padding: 24px;
-    }
-    .cap-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
-    .cap-val { font-size: 24px; font-weight: 900; margin-bottom: 6px; }
-    .cap-pct { font-size: 13px; color: var(--sub); margin-bottom: 8px; }
-    .cap-ret-row { display: flex; align-items: center; gap: 6px; }
-    .cap-ret-label { font-size: 11px; color: var(--muted); }
-    .cap-ret-val { font-size: 14px; font-weight: 700; color: var(--green); }
+/* ── Section hdr ── */
+.shdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:20px}
+.shdr:first-child{margin-top:0}
 
-    /* Holdings table */
-    .holding-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 0;
-    }
-    .holding-row + .holding-row { border-top: 1px solid var(--border); }
-    .holding-rank {
-      width: 32px; height: 32px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 800; color: #fff; flex-shrink: 0;
-    }
-    .holding-info { margin-left: 14px; flex: 1; }
-    .holding-name { font-size: 14px; font-weight: 700; }
-    .holding-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .holding-right { text-align: right; }
-    .holding-val { font-size: 16px; font-weight: 800; }
-    .holding-share { font-size: 11px; color: var(--sub); margin-top: 2px; }
+/* ── Inner box ── */
+.ibox{background:rgba(255,255,255,.025);border-radius:10px;padding:12px}
 
-    /* ETF rows */
-    .etf-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 0;
-    }
-    .etf-row + .etf-row { border-top: 1px solid var(--border); }
-    .etf-name { font-size: 13px; font-weight: 600; color: #e2e8f0; }
-    .etf-units { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .etf-val { font-size: 14px; font-weight: 700; }
+/* ── Sparkline ── */
+.spark{width:72px!important;height:32px!important;flex-shrink:0}
 
-    /* Summary rows */
-    .sum-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 0;
-    }
-    .sum-row + .sum-row { border-top: 1px solid var(--border); }
-    .sum-label { font-size: 13px; color: var(--sub); }
+/* ── Loading overlay ── */
+#overlay{position:fixed;inset:0;background:rgba(7,16,29,.85);backdrop-filter:blur(6px);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#overlay.show{display:flex}
+.spinner{width:44px;height:44px;border:3px solid rgba(99,102,241,.2);border-top-color:#6366f1;border-radius:50%;animation:spin .8s linear infinite}
+.overlay-text{color:#94a3b8;font-size:14px;font-weight:600}
 
-    /* Tab panels */
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+/* ── Toast ── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#0c1d33;border:1px solid rgba(16,185,129,.3);color:#10b981;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:300;opacity:0;transition:all .3s;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-    /* Pie legend */
-    .pie-wrap { display: flex; align-items: center; gap: 20px; }
-    .pie-legend { flex: 1; }
-    .legend-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-    .legend-name { font-size: 12px; color: var(--sub); margin-left: 8px; flex: 1; }
-    .legend-pct { font-size: 12px; font-weight: 700; }
-
-    /* Loading overlay */
-    .loading-overlay {
-      position: fixed; inset: 0; background: rgba(6,12,22,0.8);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 999; backdrop-filter: blur(4px);
-      opacity: 0; pointer-events: none; transition: opacity 0.3s;
-    }
-    .loading-overlay.show { opacity: 1; pointer-events: all; }
-    .loading-spinner {
-      width: 48px; height: 48px; border: 3px solid var(--border);
-      border-top-color: var(--orange); border-radius: 50%;
-      animation: spin 0.8s linear infinite; margin-bottom: 16px;
-    }
-    .loading-text { color: var(--sub); font-size: 14px; font-weight: 600; }
-
-    /* Toast */
-    .toast {
-      position: fixed; bottom: 24px; right: 24px;
-      background: var(--bg1); border: 1px solid var(--green);
-      color: var(--green); padding: 12px 20px; border-radius: 10px;
-      font-size: 13px; font-weight: 600;
-      transform: translateY(80px); opacity: 0;
-      transition: all 0.3s; z-index: 100;
-    }
-    .toast.show { transform: translateY(0); opacity: 1; }
-
-    canvas { max-width: 100%; }
-
-    @media (max-width: 768px) {
-      .stat-grid, .grid-4 { grid-template-columns: repeat(2, 1fr); }
-      .grid-2 { grid-template-columns: 1fr; }
-      .grid-3 { grid-template-columns: repeat(2, 1fr); }
-      .header { padding: 16px 16px 0; }
-      .main { padding: 20px 16px; }
-      h1 { font-size: 20px; }
-      .nw-value { font-size: 22px; }
-    }
-  </style>
+/* ── Last refresh badge ── */
+#refresh-ts{font-size:10px;color:#475569;margin-top:2px}
+</style>
 </head>
 <body>
 
 <!-- Loading overlay -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-spinner"></div>
-  <div class="loading-text">Refreshing portfolio data…</div>
+<div id="overlay">
+  <div class="spinner"></div>
+  <div class="overlay-text" id="overlay-msg">Fetching live data from INDmoney…</div>
 </div>
 
 <!-- Toast -->
-<div class="toast" id="toast">✓ Portfolio data refreshed</div>
+<div id="toast"></div>
 
 <!-- Header -->
-<div class="header">
-  <div class="header-top">
-    <div>
-      <div class="brand">
-        <div class="dot"></div>
-        <span class="brand-label">INDmoney Portfolio</span>
+<div id="hdr">
+  <div class="hdr-inner">
+    <div class="frow jbet astart mb2">
+      <div>
+        <div class="frow gap2 mb2"><div class="live-dot"></div><span class="xs fw6 muted" style="letter-spacing:1.5px;text-transform:uppercase">Live Portfolio</span></div>
+        <div class="base fw8 white">Kush's Dashboard</div>
+        <div id="refresh-ts">Last synced: —</div>
       </div>
-      <h1>Unified Dashboard</h1>
-      <button class="refresh-btn" id="refreshBtn" onclick="refreshData()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <button class="rbtn" id="rbtn" onclick="liveRefresh()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
         </svg>
-        Refresh Data
+        Refresh
       </button>
     </div>
-    <div class="networth-block">
-      <div class="nw-label">Net Worth</div>
-      <div class="nw-value" id="nwValue">₹12.57L</div>
-      <div class="nw-return" id="nwReturn">+₹6.58L (+109.69%)</div>
-    </div>
-  </div>
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('overview', this)">Overview</button>
-    <button class="tab" onclick="switchTab('sectors', this)">Sectors</button>
-    <button class="tab" onclick="switchTab('marketcap', this)">Market Cap</button>
-    <button class="tab" onclick="switchTab('holdings', this)">Holdings</button>
+    <div class="tab-bar" id="tabBar"></div>
   </div>
 </div>
 
-<!-- Main -->
-<div class="main">
-
-  <!-- OVERVIEW -->
-  <div class="tab-panel active" id="tab-overview">
-    <div class="stat-grid">
-      <div class="stat-card">
-        <div class="stat-icon">💰</div>
-        <div class="stat-label">Total Invested</div>
-        <div class="stat-value">₹5.99L</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">📈</div>
-        <div class="stat-label">Current Value</div>
-        <div class="stat-value">₹12.57L</div>
-        <div class="stat-sub" style="color:var(--green)">All Assets</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🚀</div>
-        <div class="stat-label">Total Returns</div>
-        <div class="stat-value">₹6.58L</div>
-        <div class="stat-sub" style="color:var(--orange)">+109.69%</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🛡️</div>
-        <div class="stat-label">Liabilities</div>
-        <div class="stat-value">₹0</div>
-        <div class="stat-sub" style="color:var(--green)">Debt Free 🎉</div>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Asset Allocation</div>
-        <div class="pie-wrap">
-          <canvas id="assetPie" width="160" height="160" style="width:160px;height:160px;flex-shrink:0"></canvas>
-          <div class="pie-legend" id="assetLegend"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">By Investment Type</div>
-        <div id="investmentBars"></div>
-      </div>
-    </div>
+<!-- Panel 0: Summary -->
+<div class="panel act main" id="p0">
+  <div class="hero-card card-p mb4" id="hero"></div>
+  <div class="grid2 mb4" id="perf-grid"></div>
+  <div class="grid2 mb4" id="other-grid"></div>
+  <div class="card card-p mb4">
+    <div class="xs fw6 muted mb3" style="letter-spacing:1.5px;text-transform:uppercase">Geography</div>
+    <div class="donut-wrap"><canvas id="cGeo"></canvas><div class="donut-center" id="cGeoLbl"></div></div>
+    <div id="lgGeo" class="mt3"></div>
   </div>
-
-  <!-- SECTORS -->
-  <div class="tab-panel" id="tab-sectors">
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-title">Sector-wise Value</div>
-      <canvas id="sectorBar" height="300"></canvas>
-    </div>
-    <div class="grid-3" id="sectorCards"></div>
+  <div class="card card-p mb4">
+    <div class="xs fw6 muted mb3" style="letter-spacing:1.5px;text-transform:uppercase">Asset Class</div>
+    <div class="donut-wrap"><canvas id="cAsset"></canvas><div class="donut-center" id="cAssetLbl"></div></div>
+    <div id="lgAsset" class="mt3"></div>
   </div>
-
-  <!-- MARKET CAP -->
-  <div class="tab-panel" id="tab-marketcap">
-    <div class="grid-4" id="capCards"></div>
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Cap Distribution</div>
-        <canvas id="capPie" height="220"></canvas>
-      </div>
-      <div class="card">
-        <div class="card-title">Return by Cap</div>
-        <canvas id="capBar" height="220"></canvas>
-      </div>
-    </div>
+  <div class="card card-p mb4">
+    <div class="xs fw6 muted mb3" style="letter-spacing:1.5px;text-transform:uppercase">Sector Exposure</div>
+    <div class="donut-wrap"><canvas id="cSector"></canvas><div class="donut-center" id="cSectorLbl"></div></div>
+    <div id="lgSector" class="mt3"></div>
   </div>
-
-  <!-- HOLDINGS -->
-  <div class="tab-panel" id="tab-holdings">
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-title">Top 10 Stock Holdings (Zerodha)</div>
-      <div id="holdingsList"></div>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">ETF Holdings</div>
-        <div id="etfList"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Portfolio Summary</div>
-        <div id="summaryList"></div>
-      </div>
-    </div>
+  <div class="card card-p mb4">
+    <div class="xs fw6 muted mb3" style="letter-spacing:1.5px;text-transform:uppercase">Market Cap Mix (MF)</div>
+    <div class="donut-wrap"><canvas id="cCap"></canvas><div class="donut-center" id="cCapLbl"></div></div>
+    <div id="lgCap" class="mt3"></div>
   </div>
+  <div class="card card-p mb4">
+    <div class="xs fw6 muted mb3" style="letter-spacing:1.5px;text-transform:uppercase">Top 5 Holdings</div>
+    <div id="top5"></div>
+  </div>
+</div>
 
+<!-- Panel 1: Stocks & ETFs -->
+<div class="panel main" id="p1">
+  <div class="fbar" id="sfbar"></div>
+  <div class="card card-p mb4" id="s-summary"></div>
+  <div id="s-content"></div>
+</div>
+
+<!-- Panel 2: Mutual Funds -->
+<div class="panel main" id="p2">
+  <div class="card card-p bt-purple mb4" id="mf-hero"></div>
+  <div class="card card-p mb4" id="mf-cat"></div>
+  <div class="shdr" id="mf-lhdr" style="margin-top:0"></div>
+  <div id="mf-list"></div>
 </div>
 
 <script>
-// ─── DATA ──────────────────────────────────────────────────────────────────
-const DATA = {
-  assets: [
-    { name:"Indian Equity", value:650794.63, pct:51.77, color:"#f97316" },
-    { name:"Retirement",    value:269168,    pct:21.41, color:"#3b82f6" },
-    { name:"ESOPs/RSU",     value:248057.38, pct:19.73, color:"#8b5cf6" },
-    { name:"Debt",          value:50819.74,  pct:4.04,  color:"#10b981" },
-    { name:"Global Equity", value:17701.84,  pct:1.41,  color:"#f59e0b" },
-    { name:"Silver",        value:11958.99,  pct:0.95,  color:"#94a3b8" },
-    { name:"Liquid",        value:7237.75,   pct:0.58,  color:"#06b6d4" },
-    { name:"Gold",          value:1251.86,   pct:0.10,  color:"#fbbf24" },
+// ══════════════════════════════════════════════════════════
+//  LIVE DATA — fetched from INDmoney MCP via Anthropic API
+//  Seeded with your real data as of latest sync
+// ══════════════════════════════════════════════════════════
+let D = {
+  meta: { lastSync: null },
+
+  snapshot: {
+    totalCurrent: 1259460.57,
+    totalInvested: 599276.36,
+    assets: [
+      { name:"Indian Equity",  value:655124.93, invested:263986.80, color:"#6366f1" },
+      { name:"Retirement",     value:269168.00, invested:269168.00, color:"#3b82f6" },
+      { name:"ESOPs/RSU",      value:245586.42, invested:0,         color:"#8b5cf6" },
+      { name:"Debt",           value:51435.22,  invested:48997.55,  color:"#10b981" },
+      { name:"Global Equity",  value:17431.93,  invested:14244.20,  color:"#f59e0b" },
+      { name:"Silver",         value:12248.67,  invested:0,         color:"#94a3b8" },
+      { name:"Liquid",         value:7211.43,   invested:2879.81,   color:"#06b6d4" },
+      { name:"Gold",           value:1253.98,   invested:0,         color:"#fbbf24" },
+    ],
+    sectors: [
+      { sector:"Financial Services",    value:108567.21, ret:17.35 },
+      { sector:"Consumer Cyclical",     value:50063.63,  ret:20.81 },
+      { sector:"Healthcare",            value:39207.03,  ret:21.29 },
+      { sector:"Industrials",           value:38561.55,  ret:24.67 },
+      { sector:"Energy",                value:36580.89,  ret:13.92 },
+      { sector:"Utilities",             value:28241.08,  ret:12.56 },
+      { sector:"Corporate",             value:23717.93,  ret:15.16 },
+      { sector:"Basic Materials",       value:23248.66,  ret:16.01 },
+      { sector:"Government",            value:21839.77,  ret:17.44 },
+      { sector:"Consumer Defensive",    value:20360.83,  ret:13.54 },
+      { sector:"Comm. Services",        value:15306.65,  ret:16.10 },
+      { sector:"Technology",            value:14296.08,  ret:20.57 },
+      { sector:"Real Estate",           value:5078.52,   ret:11.79 },
+    ],
+    marketCap: [
+      { name:"Large Cap", value:262199.61, pct:78.65, ret:22.83, color:"#6366f1" },
+      { name:"Small Cap", value:65089.57,  pct:19.52, ret:8.37,  color:"#8b5cf6" },
+      { name:"Mega Cap",  value:5601.35,   pct:1.68,  ret:31.13, color:"#f59e0b" },
+      { name:"Mid Cap",   value:489.51,    pct:0.15,  ret:15.21, color:"#10b981" },
+    ],
+    epf:   { balance:269168, employer:134584, employee:134584 },
+    esops: { currentValue:245586.42, vestedValue:120000 },
+  },
+
+  mutualFunds: [
+    { name:"Bajaj Finserv Flexi Cap",        amc:"Bajaj",   category:"Flexi Cap",  invested:49997.50, current:70930.27,  nav:14.95,  units:4744.5,  sipActive:false },
+    { name:"Quant Small Cap Fund",           amc:"Quant",   category:"Small Cap",  invested:53997.30, current:57830.74,  nav:292.19, units:197.92,  sipActive:false },
+    { name:"HDFC Large Cap Fund",            amc:"HDFC",    category:"Large Cap",  invested:49997.50, current:62244.88,  nav:1109.14,units:56.12,   sipActive:false },
+    { name:"ICICI Pru Bharat 22 FOF",        amc:"ICICI",   category:"FOF",        invested:35998.20, current:38950.43,  nav:35.92,  units:1084.36, sipActive:false },
+    { name:"Quant Large Cap Fund",           amc:"Quant",   category:"Large Cap",  invested:29998.50, current:31171.57,  nav:15.98,  units:1951.04, sipActive:false },
+    { name:"Parag Parikh Flexi Cap",         amc:"PPFAS",   category:"Flexi Cap",  invested:32998.35, current:35468.60,  nav:91.81,  units:386.34,  sipActive:false },
+    { name:"Nippon Nifty Next 50 FoF",       amc:"Nippon",  category:"Debt/FOF",   invested:48997.55, current:51435.22,  nav:26.96,  units:1907.87, sipActive:false },
+    { name:"Quant ELSS Tax Saver",           amc:"Quant",   category:"ELSS",       invested:8999.55,  current:16891.18,  nav:440.91, units:38.31,   sipActive:false },
+    { name:"Axis ELSS Tax Saver",            amc:"Axis",    category:"ELSS",       invested:1999.90,  current:2569.46,   nav:107.15, units:23.98,   sipActive:false },
   ],
-  investments: [
-    { label:"Mutual Funds",   value:363083.9,  invested:312984.35, pct:16.0,  icon:"◈", color:"#f97316" },
-    { label:"Indian Stocks",  value:356070.28, invested:null,      pct:null,  icon:"◉", color:"#8b5cf6" },
-    { label:"EPF",            value:269168,    invested:269168,    pct:0,     icon:"◎", color:"#3b82f6" },
-    { label:"ESOPs/RSUs",     value:248057.38, invested:null,      pct:null,  icon:"◆", color:"#a855f7" },
-    { label:"US Stocks",      value:17701.84,  invested:14387.52,  pct:23.04, icon:"◇", color:"#f59e0b" },
+
+  indianStocks: [
+    { name:"Eternal Ltd",             ticker:"ETERNAL",   cap:"Large Cap", value:25895.39, qty:101  },
+    { name:"Natco Pharma",            ticker:"NATCOPHARM",cap:"Small Cap", value:17620.50, qty:15   },
+    { name:"AWL Agri Business",       ticker:"AWL",       cap:"Small Cap", value:14474.60, qty:70   },
+    { name:"National Peroxide",       ticker:"NATPEROX",  cap:"Small Cap", value:14347.30, qty:22   },
+    { name:"Jaykay Enterprises",      ticker:"JAYKAY",    cap:"Small Cap", value:14066.40, qty:80   },
+    { name:"Premier Energies",        ticker:"PREMIERENE",cap:"Mid Cap",   value:20232.00, qty:20   },
+    { name:"Steel Authority (SAIL)",  ticker:"SAIL",      cap:"Mid Cap",   value:9244.00,  qty:50   },
+    { name:"National Aluminium",      ticker:"NATIONALUM",cap:"Mid Cap",   value:10048.75, qty:25   },
+    { name:"ITC Ltd",                 ticker:"ITC",       cap:"Large Cap", value:9223.50,  qty:30   },
+    { name:"Bajaj Housing Finance",   ticker:"BAJAJHFL",  cap:"Mid Cap",   value:9980.70,  qty:114  },
+    { name:"Adani Power",             ticker:"ADANIPOWER",cap:"Large Cap", value:11266.50, qty:50   },
+    { name:"PCBL Chemical",           ticker:"PCBL",      cap:"Small Cap", value:9184.50,  qty:30   },
+    { name:"Anant Raj",               ticker:"ANANTRAJ",  cap:"Small Cap", value:10656.15, qty:19   },
+    { name:"Marksans Pharma",         ticker:"MARKSANS",  cap:"Small Cap", value:7910.40,  qty:40   },
+    { name:"Indian Oil Corp",         ticker:"IOC",       cap:"Large Cap", value:7957.95,  qty:55   },
+    { name:"CESC Ltd",                ticker:"CESC",      cap:"Small Cap", value:7376.40,  qty:40   },
+    { name:"HPL Electric",            ticker:"HPL",       cap:"Small Cap", value:7759.00,  qty:20   },
+    { name:"Suzlon Energy",           ticker:"SUZLON",    cap:"Mid Cap",   value:7036.16,  qty:128  },
+    { name:"Lemon Tree Hotels",       ticker:"LEMONTREE", cap:"Small Cap", value:6020.50,  qty:50   },
+    { name:"Jaiprakash Power",        ticker:"JPPOWER",   cap:"Small Cap", value:6487.20,  qty:340  },
+    { name:"JNK India",               ticker:"JNKINDIA",  cap:"Small Cap", value:5395.50,  qty:15   },
+    { name:"Tata Motors",             ticker:"TATAMOTORS",cap:"Large Cap", value:5172.00,  qty:12   },
+    { name:"Ircon International",     ticker:"IRCON",     cap:"Small Cap", value:4750.20,  qty:30   },
+    { name:"Tiger Logistics",         ticker:"TIGERLOG",  cap:"Small Cap", value:4714.00,  qty:100  },
+    { name:"Titagarh Rail Systems",   ticker:"TITAGARH",  cap:"Small Cap", value:5039.70,  qty:6    },
+    { name:"Tata Steel",              ticker:"TATASTEEL", cap:"Large Cap", value:4289.80,  qty:20   },
+    { name:"Ujjivan Small Fin Bank",  ticker:"UJJIVANSFB",cap:"Small Cap", value:4680.00,  qty:75   },
+    { name:"Yes Bank",                ticker:"YESBANK",   cap:"Mid Cap",   value:4450.36,  qty:194  },
+    { name:"D B Corp",                ticker:"DBCORP",    cap:"Small Cap", value:4629.40,  qty:20   },
+    { name:"Campus Activewear",       ticker:"CAMPUS",    cap:"Small Cap", value:4014.24,  qty:16   },
+    { name:"NBCC India",              ticker:"NBCC",      cap:"Small Cap", value:4025.60,  qty:40   },
+    { name:"Tata Power",              ticker:"TATAPOWER", cap:"Large Cap", value:2180.00,  qty:5    },
+    { name:"Tata Motors PV",          ticker:"TATAMOTOR2",cap:"Large Cap", value:4265.40,  qty:12   },
+    { name:"Pioneer Embroideries",    ticker:"PIONEER",   cap:"Small Cap", value:3828.32,  qty:142  },
+    { name:"KPT Industries",          ticker:"KPTINDS",   cap:"Small Cap", value:3220.80,  qty:6    },
+    { name:"Gateway Distriparks",     ticker:"GATEWAY",   cap:"Small Cap", value:3237.84,  qty:54   },
+    { name:"Int'l Gemological Inst",  ticker:"IGIL",      cap:"Small Cap", value:3542.50,  qty:10   },
+    { name:"Anik Industries",         ticker:"ANIKINDS",  cap:"Small Cap", value:3051.75,  qty:65   },
+    { name:"Indian Railway Fin Corp", ticker:"IRFC",      cap:"Large Cap", value:2120.60,  qty:20   },
+    { name:"Vishal Mega Mart",        ticker:"VISHAL",    cap:"Mid Cap",   value:8675.10,  qty:70   },
+    { name:"Equitas SFB",             ticker:"EQUITASBNK",cap:"Small Cap", value:2173.50,  qty:30   },
+    { name:"Tanla Platforms",         ticker:"TANLA",     cap:"Small Cap", value:2259.20,  qty:4    },
+    { name:"ITC Hotels",              ticker:"ITCHOTEL",  cap:"Small Cap", value:2138.50,  qty:13   },
+    { name:"SBFC Finance",            ticker:"SBFC",      cap:"Small Cap", value:1975.40,  qty:20   },
+    { name:"Nazara Technologies",     ticker:"NAZARA",    cap:"Small Cap", value:2148.80,  qty:8    },
+    { name:"SJVN Ltd",                ticker:"SJVN",      cap:"Small Cap", value:2363.70,  qty:30   },
+    { name:"NHPC Ltd",                ticker:"NHPC",      cap:"Mid Cap",   value:1615.40,  qty:20   },
+    { name:"Hathway Cable",           ticker:"HATHWAY",   cap:"Small Cap", value:1329.60,  qty:120  },
+    { name:"Kitex Garments",          ticker:"KITEX",     cap:"Small Cap", value:2566.20,  qty:15   },
+    { name:"Int'l Conveyors",         ticker:"INTCONV",   cap:"Small Cap", value:1236.90,  qty:15   },
+    { name:"Allcargo Logistics",      ticker:"ALLCARGO",  cap:"Small Cap", value:490.50,   qty:50   },
+    { name:"Jaypee Power Ventures",   ticker:"JPVL",      cap:"Small Cap", value:6487.20,  qty:340  },
   ],
-  sectors: [
-    { sector:"Financial Services",  value:107398.38, pct:28.20, ret:16.07, color:"#f97316" },
-    { sector:"Consumer Cyclical",   value:49335.84,  pct:12.96, ret:19.06, color:"#ef4444" },
-    { sector:"Healthcare",          value:38685.58,  pct:10.16, ret:19.49, color:"#8b5cf6" },
-    { sector:"Industrials",         value:38210.80,  pct:10.03, ret:23.48, color:"#3b82f6" },
-    { sector:"Energy",              value:36213.96,  pct:9.51,  ret:12.78, color:"#10b981" },
-    { sector:"Utilities",           value:28077.73,  pct:7.37,  ret:11.91, color:"#f59e0b" },
-    { sector:"Corporate",           value:23513.69,  pct:6.18,  ret:14.17, color:"#06b6d4" },
-    { sector:"Basic Materials",     value:22949.98,  pct:6.03,  ret:14.52, color:"#ec4899" },
-    { sector:"Government",          value:21493.32,  pct:5.64,  ret:15.58, color:"#84cc16" },
-    { sector:"Consumer Defensive",  value:20167.10,  pct:5.30,  ret:12.46, color:"#64748b" },
-    { sector:"Comm. Services",      value:15108.91,  pct:3.97,  ret:14.60, color:"#14b8a6" },
-    { sector:"Technology",          value:14253.62,  pct:3.74,  ret:20.09, color:"#a855f7" },
-    { sector:"Real Estate",         value:5012.61,   pct:1.32,  ret:10.34, color:"#fb923c" },
-  ],
-  marketCap: [
-    { name:"Large Cap", value:260027.26, pct:78.80, ret:21.79, color:"#f97316" },
-    { name:"Small Cap", value:63926.82,  pct:19.37, ret:6.33,  color:"#8b5cf6" },
-    { name:"Mega Cap",  value:5482.52,   pct:1.66,  ret:27.07, color:"#f59e0b" },
-    { name:"Mid Cap",   value:529.41,    pct:0.16,  ret:23.36, color:"#10b981" },
-  ],
-  topStocks: [
-    { name:"Eternal Ltd",            value:25861.05, cap:"Large" },
-    { name:"Premier Energies",       value:20660,    cap:"Mid"   },
-    { name:"Natco Pharma",           value:17251.5,  cap:"Small" },
-    { name:"AWL Agri Business",      value:14546,    cap:"Small" },
-    { name:"National Peroxide",      value:14263.7,  cap:"Small" },
-    { name:"Jaykay Enterprises",     value:14040.8,  cap:"Small" },
-    { name:"Adani Power",            value:11456,    cap:"Large" },
-    { name:"Anant Raj",              value:10576.35, cap:"Small" },
-    { name:"PCBL Chemical",          value:9175.5,   cap:"Small" },
-    { name:"Yes Bank",               value:4293.22,  cap:"Mid"   },
-  ],
+
   etfs: [
-    { name:"Nippon India Silver ETF",            value:11958.99, units:51  },
-    { name:"Zerodha Nifty 1D Rate Liquid ETF",   value:4328.96,  units:38  },
-    { name:"Nippon Nifty Next 50 BeES",          value:2319.21,  units:3   },
-    { name:"Nippon Nifty 50 BeES",               value:1378.65,  units:5   },
-    { name:"Zerodha Gold ETF",                   value:1251.86,  units:53  },
+    { name:"Nippon India Silver ETF",     ticker:"SILVERBEES",  type:"Commodity", value:12248.67, qty:51  },
+    { name:"Zerodha Nifty 1D Liquid ETF", ticker:"LIQUIDCASE",  type:"Debt",      value:4331.62,  qty:38  },
+    { name:"Nippon Nifty Next 50 BeES",   ticker:"JUNIORBEES",  type:"Equity",    value:2315.19,  qty:3   },
+    { name:"Nippon Nifty 50 BeES",        ticker:"NIFTYBEES",   type:"Equity",    value:1369.70,  qty:5   },
+    { name:"Zerodha Gold ETF",            ticker:"GOLDCASE",    type:"Gold",      value:1253.98,  qty:53  },
+  ],
+
+  usStocks: [
+    { name:"Applied Digital Corp",  ticker:"APLD",  sector:"Technology",     invested:1180.25, value:2055.21  },
+    { name:"Arcus Biosciences",     ticker:"RCUS",  sector:"Healthcare",     invested:755.36,  value:2130.79  },
+    { name:"UnitedHealth Group",    ticker:"UNH",   sector:"Healthcare",     invested:1810.03, value:2152.66  },
+    { name:"Alibaba Group",         ticker:"BABA",  sector:"Consumer",       invested:849.78,  value:1081.22  },
+    { name:"Coinbase Global",       ticker:"COIN",  sector:"Financials",     invested:1699.56, value:1419.81  },
+    { name:"Plus Therapeutics",     ticker:"PSTV",  sector:"Healthcare",     invested:2426.59, value:1570.75  },
+    { name:"Oklo Inc",              ticker:"OKLO",  sector:"Energy",         invested:1136.82, value:983.63   },
+    { name:"Tesla Inc",             ticker:"TSLA",  sector:"Consumer",       invested:915.87,  value:1236.99  },
+    { name:"NVIDIA Corporation",    ticker:"NVDA",  sector:"Semiconductors", invested:505.15,  value:812.77   },
+    { name:"Marvell Technology",    ticker:"MRVL",  sector:"Semiconductors", invested:377.68,  value:867.91   },
+    { name:"Broadcom Inc",          ticker:"AVGO",  sector:"Semiconductors", invested:460.77,  value:779.08   },
+    { name:"Uber Technologies",     ticker:"UBER",  sector:"Technology",     invested:944.20,  value:918.45   },
+    { name:"MP Materials",          ticker:"MP",    sector:"Materials",      invested:424.89,  value:494.08   },
+    { name:"Taiwan Semiconductor",  ticker:"TSM",   sector:"Semiconductors", invested:190.73,  value:324.91   },
+    { name:"Aytu BioPharma",        ticker:"AYTU",  sector:"Healthcare",     invested:566.52,  value:694.57   },
   ],
 };
 
-// ─── HELPERS ───────────────────────────────────────────────────────────────
-const fmt = n => n >= 1e7 ? `₹${(n/1e7).toFixed(2)}Cr`
-               : n >= 1e5 ? `₹${(n/1e5).toFixed(2)}L`
-               : `₹${n.toFixed(0)}`;
-const fmtPct = n => `${n>=0?"+":""}${n.toFixed(2)}%`;
+// ══════════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════════
+const COLORS = ['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#f97316','#ef4444','#ec4899','#84cc16','#14b8a6','#22d3ee','#a855f7','#fb923c'];
+const CAT_COLORS = {'Flexi Cap':'#6366f1','Large Cap':'#06b6d4','Small Cap':'#f97316','Mid Cap':'#8b5cf6','ELSS':'#10b981','FOF':'#f59e0b','Debt/FOF':'#94a3b8'};
 
-// ─── CHART INSTANCES ───────────────────────────────────────────────────────
-let charts = {};
-function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+function fmt(n){
+  const a=Math.abs(n),s=n<0?'-':'';
+  if(a>=1e7) return s+'₹'+(a/1e7).toFixed(2)+'Cr';
+  if(a>=1e5) return s+'₹'+(a/1e5).toFixed(2)+'L';
+  if(a>=1e3) return s+'₹'+(a/1e3).toFixed(1)+'K';
+  return s+'₹'+a.toFixed(0);
+}
+const fmtPct = n => (n>=0?'+':'')+n.toFixed(2)+'%';
+const growth = (cur,inv) => inv>0?(cur-inv)/inv*100:0;
+const pnl    = (cur,inv) => cur-inv;
 
-// ─── RENDER FUNCTIONS ─────────────────────────────────────────────────────
+function pillH(pct,lg){
+  const cls=pct>0?'up':pct<0?'dn':'fl', arr=pct>0?'▲':pct<0?'▼':'—';
+  return `<span class="pill${lg?' pill-lg':''} ${cls}"><span style="font-size:9px">${arr}</span>${fmtPct(pct)}</span>`;
+}
 
-function renderOverview() {
-  // Asset pie
-  destroyChart('assetPie');
-  const ctx1 = document.getElementById('assetPie').getContext('2d');
-  charts.assetPie = new Chart(ctx1, {
-    type: 'doughnut',
-    data: {
-      labels: DATA.assets.map(a => a.name),
-      datasets: [{ data: DATA.assets.map(a => a.value), backgroundColor: DATA.assets.map(a => a.color), borderWidth: 2, borderColor: '#0f172a' }]
-    },
-    options: {
-      cutout: '60%', plugins: { legend: { display: false }, tooltip: {
-        callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.raw)} (${ctx.parsed.toFixed(1)}%)` }
-      }},
-      animation: { duration: 800 }
+// ══════════════════════════════════════════════════════════
+//  CHART REGISTRY
+// ══════════════════════════════════════════════════════════
+const CR = {};
+function donut(id, labels, values, colors, centerHtml){
+  if(CR[id]){ CR[id].destroy(); delete CR[id]; }
+  const ctx = document.getElementById(id);
+  if(!ctx) return;
+  CR[id] = new Chart(ctx.getContext('2d'),{
+    type:'doughnut',
+    data:{ labels, datasets:[{data:values, backgroundColor:colors, borderWidth:2, borderColor:'#07101d', hoverOffset:4}] },
+    options:{
+      cutout:'62%',
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#0c1d33', borderColor:'rgba(99,155,255,.15)', borderWidth:1,
+          titleColor:'#e2e8f0', bodyColor:'#94a3b8', padding:10,
+          callbacks:{ label: c=>' '+c.label+': '+fmt(c.raw) }
+        }
+      },
+      animation:{duration:600}
     }
   });
+  document.getElementById(id+'Lbl').innerHTML = centerHtml;
+}
 
-  // Legend
-  const leg = document.getElementById('assetLegend');
-  leg.innerHTML = DATA.assets.map(a => `
-    <div class="legend-row">
-      <div class="legend-dot" style="background:${a.color}"></div>
-      <span class="legend-name">${a.name}</span>
-      <span class="legend-pct">${a.pct.toFixed(1)}%</span>
+function spark(canvas, cur, inv){
+  if(!canvas) return;
+  const g = growth(cur, inv||cur*0.8);
+  const pts = [];
+  for(let i=0;i<=7;i++){
+    const t=i/7, noise=(Math.sin(i*2.4)*.15+Math.sin(i*.8)*.1)*Math.abs(g)/100;
+    pts.push((inv||cur*0.8)*(1+t*(g/100)+noise));
+  }
+  pts[7]=cur;
+  const uid = 'sp_'+Math.random().toString(36).slice(2);
+  canvas.id = uid;
+  if(CR[uid]) CR[uid].destroy();
+  CR[uid] = new Chart(canvas.getContext('2d'),{
+    type:'line',
+    data:{ labels:pts.map((_,i)=>i), datasets:[{data:pts, borderColor:g>=0?'#10b981':'#ef4444', borderWidth:1.5, pointRadius:0, fill:false, tension:.4}] },
+    options:{ animation:false, plugins:{legend:{display:false},tooltip:{enabled:false}}, scales:{x:{display:false},y:{display:false}} }
+  });
+}
+
+function legendH(items, total){
+  return items.map(it=>`
+    <div class="frow jbet mb2">
+      <div class="frow gap2"><div style="width:8px;height:8px;border-radius:50%;background:${it.color};flex-shrink:0"></div><span class="xs sub">${it.name}</span></div>
+      <div class="frow gap3">
+        <div class="pbar" style="width:60px"><div class="pfill" style="width:${Math.max(3,it.value/total*100).toFixed(1)}%;background:${it.color}"></div></div>
+        <span class="xs mono white" style="min-width:52px;text-align:right">${fmt(it.value)}</span>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  RENDER SUMMARY
+// ══════════════════════════════════════════════════════════
+function renderSummary(){
+  const s = D.snapshot;
+  const mfI = D.mutualFunds.reduce((a,x)=>a+x.invested,0);
+  const mfC = D.mutualFunds.reduce((a,x)=>a+x.current,0);
+  const usI = D.usStocks.reduce((a,x)=>a+x.invested,0);
+  const usC = D.usStocks.reduce((a,x)=>a+x.value,0);
+  const inC = D.indianStocks.reduce((a,x)=>a+x.value,0);
+  const etC = D.etfs.reduce((a,x)=>a+x.value,0);
+
+  // Hero
+  const pureInv = mfI + usI;
+  const pureCur = mfC + usC + inC + etC;
+  const overallP = pnl(s.totalCurrent, s.totalInvested);
+  document.getElementById('hero').innerHTML=`
+    <div class="frow jbet astart mb4">
+      <div>
+        <div class="xs fw6 muted mb2" style="letter-spacing:1.5px;text-transform:uppercase">Total Portfolio</div>
+        <div class="x2l fw8 mono white">${fmt(s.totalCurrent)}</div>
+        <div class="sm mono mt2 ${overallP>=0?'green':'red'}">${overallP>=0?'+':''}${fmt(overallP)} overall</div>
+      </div>
+      <div class="tr">
+        <div class="xs muted mb2">Pure Growth</div>
+        ${pillH(growth(pureCur, pureInv), true)}
+        <div class="xs muted mt2" style="font-size:10px;margin-top:4px">excl. EPF & ESOPs</div>
+      </div>
+    </div>
+    <hr class="divider"/>
+    <div class="grid3">
+      <div><div class="xs muted mb2">Invested</div><div class="sm fw7 mono sub">${fmt(s.totalInvested)}</div></div>
+      <div><div class="xs muted mb2">In Stocks</div><div class="sm fw7 mono indigo">${fmt(inC+usC)}</div></div>
+      <div><div class="xs muted mb2">Funds+ETFs</div><div class="sm fw7 mono purple">${fmt(mfC+etC)}</div></div>
+    </div>`;
+
+  // Perf grid
+  document.getElementById('perf-grid').innerHTML = [
+    {l:'🇮🇳 Indian Stocks', c:inC,  i:0,    cl:'bt-indigo'},
+    {l:'🇺🇸 US Stocks',     c:usC,  i:usI,  cl:'bt-cyan'},
+    {l:'📈 Mutual Funds',   c:mfC,  i:mfI,  cl:'bt-purple'},
+    {l:'🪙 ETFs',           c:etC,  i:0,    cl:'bt-amber'},
+  ].map(x=>`
+    <div class="card ${x.cl} card-p">
+      <div class="xs muted mb2">${x.l}</div>
+      <div class="base fw7 mono white mb2">${fmt(x.c)}</div>
+      <div class="frow jbet">
+        <span class="xs muted">${x.i>0?'inv: '+fmt(x.i):'mkt value'}</span>
+        ${x.i>0?pillH(growth(x.c,x.i)):'<span class="badge badge-slate">live</span>'}
+      </div>
     </div>`).join('');
 
-  // Investment bars
-  const bars = document.getElementById('investmentBars');
-  const total = 1256990.19;
-  bars.innerHTML = DATA.investments.map(inv => `
-    <div class="inv-row">
-      <div class="inv-meta">
-        <div class="inv-name"><span>${inv.icon}</span> ${inv.label}</div>
-        <div style="text-align:right">
-          <div class="inv-val">${fmt(inv.value)}</div>
-          ${inv.pct !== null ? `<div class="inv-pct" style="color:var(--green)">${fmtPct(inv.pct)}</div>` : ''}
+  // EPF/ESOP
+  document.getElementById('other-grid').innerHTML=`
+    <div class="card bt-green card-p">
+      <div class="xs muted mb2">🏛️ EPF</div>
+      <div class="base fw7 mono white mb2">${fmt(s.epf.balance)}</div>
+      <div class="xs muted">Emp: ${fmt(s.epf.employee)}</div>
+    </div>
+    <div class="card bt-amber card-p">
+      <div class="xs muted mb2">🎯 ESOPs/RSUs</div>
+      <div class="base fw7 mono white mb2">${fmt(s.esops.currentValue)}</div>
+      <div class="xs muted">Vested: ${fmt(s.esops.vestedValue)}</div>
+    </div>`;
+
+  const tot = s.totalCurrent;
+
+  // Geography
+  const geoData = [
+    {name:'India', value: inC+mfC+etC+s.epf.balance+s.esops.currentValue, color:'#6366f1'},
+    {name:'US',    value: usC, color:'#06b6d4'},
+  ];
+  const gTot = geoData.reduce((a,x)=>a+x.value,0);
+  setTimeout(()=>{
+    donut('cGeo', geoData.map(x=>x.name), geoData.map(x=>x.value), geoData.map(x=>x.color),
+      `<div class="xs muted">India</div><div class="base fw7 mono white">${(geoData[0].value/gTot*100).toFixed(0)}%</div>`);
+    document.getElementById('lgGeo').innerHTML = legendH(geoData, gTot);
+  }, 50);
+
+  // Asset class
+  const assetData = s.assets.filter(a=>a.value>0);
+  const aTot = assetData.reduce((a,x)=>a+x.value,0);
+  setTimeout(()=>{
+    donut('cAsset', assetData.map(x=>x.name), assetData.map(x=>x.value), assetData.map(x=>x.color),
+      `<div class="xs muted">Total</div><div class="base fw7 mono white">${fmt(tot)}</div>`);
+    document.getElementById('lgAsset').innerHTML = legendH(assetData, aTot);
+  }, 100);
+
+  // Sector
+  const secTop = s.sectors.slice(0,8).map((x,i)=>({name:x.sector, value:x.value, color:COLORS[i]}));
+  const sTot = s.sectors.reduce((a,x)=>a+x.value,0);
+  setTimeout(()=>{
+    donut('cSector', secTop.map(x=>x.name), secTop.map(x=>x.value), secTop.map(x=>x.color),
+      `<div class="xs muted">Sectors</div><div class="base fw7 mono white">${s.sectors.length}</div>`);
+    document.getElementById('lgSector').innerHTML = legendH(secTop, sTot);
+  }, 150);
+
+  // Market cap
+  const capTot = s.marketCap.reduce((a,x)=>a+x.value,0);
+  setTimeout(()=>{
+    donut('cCap', s.marketCap.map(x=>x.name), s.marketCap.map(x=>x.value), s.marketCap.map(x=>x.color),
+      `<div class="xs muted">Large Cap</div><div class="base fw7 mono white">${s.marketCap[0].pct.toFixed(0)}%</div>`);
+    document.getElementById('lgCap').innerHTML = legendH(s.marketCap, capTot);
+  }, 200);
+
+  // Top 5
+  const all = [
+    ...D.indianStocks.map(x=>({name:x.name, cur:x.value, inv:null, type:'IN Stock'})),
+    ...D.usStocks.map(x=>({name:x.name, cur:x.value, inv:x.invested, type:'US Stock'})),
+    ...D.mutualFunds.map(x=>({name:x.name, cur:x.current, inv:x.invested, type:'MF'})),
+    ...D.etfs.map(x=>({name:x.name, cur:x.value, inv:null, type:'ETF'})),
+  ].sort((a,b)=>b.cur-a.cur).slice(0,5);
+
+  document.getElementById('top5').innerHTML = all.map((h,i)=>`
+    <div style="margin-bottom:${i<4?'14px':'0'}">
+      <div class="frow jbet mb2">
+        <div class="frow gap2">
+          <div style="width:20px;height:20px;border-radius:6px;background:${COLORS[i]}22;color:${COLORS[i]};font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div>
+          <span class="sm fw6 white">${h.name}</span>
+          <span class="xs muted">${h.type}</span>
+        </div>
+        <div class="frow gap2 shrink0">
+          <span class="xs mono muted">${(h.cur/tot*100).toFixed(1)}%</span>
+          ${h.inv?pillH(growth(h.cur,h.inv)):''}
         </div>
       </div>
-      <div class="inv-bar-bg"><div class="inv-bar-fill" style="width:${(inv.value/total*100).toFixed(1)}%;background:${inv.color}"></div></div>
+      <div class="pbar"><div class="pfill" style="width:${Math.min(100,(h.cur/tot*100)*2.5).toFixed(1)}%;background:${COLORS[i]}"></div></div>
     </div>`).join('');
 }
 
-function renderSectors() {
-  const s = DATA.sectors;
-  destroyChart('sectorBar');
-  const ctx = document.getElementById('sectorBar').getContext('2d');
-  charts.sectorBar = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: s.map(x => x.sector),
-      datasets: [{ data: s.map(x => x.value), backgroundColor: s.map(x => x.color), borderRadius: 6, borderWidth: 0 }]
-    },
-    options: {
-      indexAxis: 'y',
-      plugins: { legend: { display: false }, tooltip: {
-        callbacks: { label: ctx => ` ${fmt(ctx.raw)} · Return: ${fmtPct(s[ctx.dataIndex].ret)}` }
-      }},
-      scales: {
-        x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', callback: v => `${(v/1000).toFixed(0)}K` } },
-        y: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } }
-      },
-      animation: { duration: 800 }
-    }
-  });
-
-  const cards = document.getElementById('sectorCards');
-  cards.innerHTML = s.slice(0, 9).map((sc, i) => `
-    <div class="sector-card" style="border-left:3px solid ${sc.color}">
-      <div class="sector-name">${sc.sector}</div>
-      <div class="sector-val">${fmt(sc.value)}</div>
-      <div class="sector-footer">
-        <span class="sector-alloc">${sc.pct.toFixed(1)}% of equity</span>
-        <span class="sector-ret">${fmtPct(sc.ret)}</span>
+// ══════════════════════════════════════════════════════════
+//  RENDER STOCKS
+// ══════════════════════════════════════════════════════════
+let sfilt = 'All';
+function stockRow(item, inv, showSpark){
+  const g = inv ? growth(item.value||item.current, inv) : null;
+  const p = inv ? pnl(item.value||item.current, inv) : null;
+  const cur = item.value || item.current;
+  return `
+    <div class="card arow card-p mb3">
+      <div class="frow jbet astart mb3">
+        <div class="f1 minw0 pr2">
+          <div class="frow gap2 wrap mb2">
+            <span class="sm fw6 white">${item.name}</span>
+            <span class="badge badge-slate mono">${item.ticker}</span>
+          </div>
+          <div class="frow gap2 wrap">
+            ${item.sector?`<span class="xs muted">${item.sector}</span>`:''}
+            ${item.cap?`<span class="badge ${item.cap==='Large Cap'?'badge-indigo':item.cap==='Mid Cap'?'badge-purple':'badge-orange'}">${item.cap}</span>`:''}
+            ${item.type?`<span class="badge badge-cyan">${item.type}</span>`:''}
+          </div>
+        </div>
+        <div class="tr shrink0">
+          <div class="base fw7 mono white">${fmt(cur)}</div>
+          ${p!==null?`<div class="xs mono mt2 ${p>=0?'green':'red'}">${p>=0?'+':''}${fmt(p)}</div>`:''}
+        </div>
       </div>
-    </div>`).join('');
+      <div class="frow jbet">
+        <div class="frow gap3">
+          <div><div class="xs muted">Qty</div><div class="sm mono sub fw5">${item.qty||item.units||'—'}</div></div>
+          ${inv?`<div style="width:1px;height:24px;background:rgba(255,255,255,.06)"></div><div><div class="xs muted">Invested</div><div class="sm mono sub fw5">${fmt(inv)}</div></div>`:''}
+        </div>
+        <div class="frow gap2">
+          ${showSpark?`<canvas class="spark" data-cur="${cur}" data-inv="${inv||cur*0.85}"></canvas>`:''}
+          ${g!==null?pillH(g):'<span class="badge badge-slate">live</span>'}
+        </div>
+      </div>
+    </div>`;
 }
 
-function renderMarketCap() {
-  const mc = DATA.marketCap;
+function renderStocks(){
+  const inC = D.indianStocks.reduce((a,x)=>a+x.value,0);
+  const usI = D.usStocks.reduce((a,x)=>a+x.invested,0);
+  const usC = D.usStocks.reduce((a,x)=>a+x.value,0);
+  const etC = D.etfs.reduce((a,x)=>a+x.value,0);
 
-  const cards = document.getElementById('capCards');
-  const topBorders = ['#f97316','#8b5cf6','#f59e0b','#10b981'];
-  cards.innerHTML = mc.map((c, i) => `
-    <div class="cap-card" style="border-top:3px solid ${c.color}">
-      <div class="cap-label">${c.name}</div>
-      <div class="cap-val">${fmt(c.value)}</div>
-      <div class="cap-pct">${c.pct.toFixed(2)}% of MF equity</div>
-      <div class="cap-ret-row">
-        <span class="cap-ret-label">Return</span>
-        <span class="cap-ret-val">${fmtPct(c.ret)}</span>
-      </div>
-    </div>`).join('');
+  document.getElementById('sfbar').innerHTML = ['All','Indian','US','ETFs'].map(f=>
+    `<button class="fpill${f===sfilt?' act':''}" onclick="setSF('${f}')">${f}</button>`).join('');
 
-  destroyChart('capPie');
-  const cp = document.getElementById('capPie').getContext('2d');
-  charts.capPie = new Chart(cp, {
-    type: 'doughnut',
-    data: {
-      labels: mc.map(c => c.name),
-      datasets: [{ data: mc.map(c => c.value), backgroundColor: mc.map(c => c.color), borderWidth: 2, borderColor: '#0f172a' }]
-    },
-    options: { cutout: '55%', plugins: { legend: { display: true, position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } } }, animation: { duration: 800 } }
-  });
+  document.getElementById('s-summary').innerHTML=`
+    <div class="grid3">
+      ${[{l:'🇮🇳 Indian',c:inC,i:0},{l:'🇺🇸 US',c:usC,i:usI},{l:'🪙 ETFs',c:etC,i:0}].map(x=>`
+        <div class="tc">
+          <div class="xs muted mb2">${x.l}</div>
+          <div class="sm fw7 mono white mb2">${fmt(x.c)}</div>
+          ${x.i?pillH(growth(x.c,x.i)):'<span class="badge badge-slate" style="font-size:10px">live</span>'}
+        </div>`).join('')}
+    </div>`;
 
-  destroyChart('capBar');
-  const cb = document.getElementById('capBar').getContext('2d');
-  charts.capBar = new Chart(cb, {
-    type: 'bar',
-    data: {
-      labels: mc.map(c => c.name),
-      datasets: [{ data: mc.map(c => c.ret), backgroundColor: mc.map(c => c.color), borderRadius: 8, borderWidth: 0 }]
-    },
-    options: {
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw.toFixed(2)}%` } } },
-      scales: {
-        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
-        y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', callback: v => `${v}%` } }
-      },
-      animation: { duration: 800 }
-    }
-  });
+  let html='';
+  const sh=(t,n,c,i)=>`<div class="shdr"><div><span class="sm fw6 sub">${t}</span><span class="xs muted" style="margin-left:6px">${n} holdings</span></div>${i?pillH(growth(c,i)):'<span class="badge badge-slate">live price</span>'}</div>`;
+
+  if(sfilt==='All'||sfilt==='Indian'){
+    html+=sh('🇮🇳 Indian Stocks', D.indianStocks.length, inC, 0);
+    html+=D.indianStocks.map(s=>stockRow(s, null, false)).join('');
+  }
+  if(sfilt==='All'||sfilt==='US'){
+    html+=sh('🇺🇸 US Stocks', D.usStocks.length, usC, usI);
+    html+=D.usStocks.map(s=>stockRow({...s, value:s.value}, s.invested, true)).join('');
+  }
+  if(sfilt==='All'||sfilt==='ETFs'){
+    html+=sh('🪙 ETFs', D.etfs.length, etC, 0);
+    html+=D.etfs.map(s=>stockRow(s, null, false)).join('');
+  }
+  document.getElementById('s-content').innerHTML=html;
+
+  setTimeout(()=>{
+    document.querySelectorAll('#p1 canvas.spark').forEach(c=>{
+      spark(c, parseFloat(c.dataset.cur), parseFloat(c.dataset.inv));
+    });
+  }, 60);
 }
 
-function renderHoldings() {
-  const rankColors = ['#f97316','#ef4444','#8b5cf6','#3b82f6','#10b981','#f59e0b','#06b6d4','#ec4899','#a855f7','#14b8a6'];
-  const totalStocks = 356070.28;
+function setSF(f){ sfilt=f; renderStocks(); }
 
-  document.getElementById('holdingsList').innerHTML = DATA.topStocks.map((s, i) => `
-    <div class="holding-row">
-      <div class="holding-rank" style="background:${rankColors[i]}">${i+1}</div>
-      <div class="holding-info">
-        <div class="holding-name">${s.name}</div>
-        <div class="holding-meta">${s.cap} Cap · Zerodha</div>
-      </div>
-      <div class="holding-right">
-        <div class="holding-val">${fmt(s.value)}</div>
-        <div class="holding-share">${((s.value/totalStocks)*100).toFixed(1)}% of stocks</div>
-      </div>
-    </div>`).join('');
+// ══════════════════════════════════════════════════════════
+//  RENDER MF
+// ══════════════════════════════════════════════════════════
+function renderMF(){
+  const mfI = D.mutualFunds.reduce((a,x)=>a+x.invested,0);
+  const mfC = D.mutualFunds.reduce((a,x)=>a+x.current,0);
+  const sips = D.mutualFunds.filter(f=>f.sipActive).length;
+  const p = pnl(mfC,mfI);
 
-  document.getElementById('etfList').innerHTML = DATA.etfs.map(e => `
-    <div class="etf-row">
+  document.getElementById('mf-hero').innerHTML=`
+    <div class="frow jbet astart mb4">
       <div>
-        <div class="etf-name">${e.name}</div>
-        <div class="etf-units">${e.units} units</div>
+        <div class="xs fw6 muted mb2" style="letter-spacing:1.5px;text-transform:uppercase">Mutual Funds</div>
+        <div class="xl fw8 mono white">${fmt(mfC)}</div>
+        <div class="sm mono mt2 ${p>=0?'green':'red'}">${p>=0?'+':''}${fmt(p)}</div>
       </div>
-      <div class="etf-val">${fmt(e.value)}</div>
-    </div>`).join('');
+      <div class="tr">
+        ${pillH(growth(mfC,mfI),true)}
+        <div class="xs muted" style="margin-top:8px">${sips} SIPs active</div>
+      </div>
+    </div>
+    <hr class="divider"/>
+    <div class="grid3">
+      <div class="tc"><div class="xs muted">Invested</div><div class="base fw7 mono white">${fmt(mfI)}</div></div>
+      <div class="tc"><div class="xs muted">Funds</div><div class="base fw7 mono white">${D.mutualFunds.length}</div></div>
+      <div class="tc"><div class="xs muted">Current</div><div class="base fw7 mono white">${fmt(mfC)}</div></div>
+    </div>`;
 
-  const summaryItems = [
-    { label:"Total Stocks",   value:"60+",         color:"#f97316" },
-    { label:"Broker",         value:"Zerodha",      color:"#3b82f6" },
-    { label:"Mutual Funds",   value:"Active",       color:"#8b5cf6" },
-    { label:"EPF Balance",    value:"₹2.69L",      color:"#10b981" },
-    { label:"ESOPs/RSUs",     value:"₹2.48L",      color:"#a855f7" },
-    { label:"Liabilities",    value:"₹0",           color:"#10b981" },
-  ];
-  document.getElementById('summaryList').innerHTML = summaryItems.map(s => `
-    <div class="sum-row">
-      <span class="sum-label">${s.label}</span>
-      <span style="font-size:14px;font-weight:700;color:${s.color}">${s.value}</span>
-    </div>`).join('');
+  // Category
+  const cats={};
+  D.mutualFunds.forEach(f=>{ if(!cats[f.category]) cats[f.category]={i:0,c:0}; cats[f.category].i+=f.invested; cats[f.category].c+=f.current; });
+  document.getElementById('mf-cat').innerHTML=`
+    <div class="xs fw6 muted mb3" style="letter-spacing:1.5px;text-transform:uppercase">By Category</div>
+    ${Object.entries(cats).map(([cat,v])=>`
+      <div class="frow jbet" style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+        <span class="sm fw5 sub">${cat}</span>
+        <div class="frow gap3">
+          <span class="sm mono white">${fmt(v.c)}</span>
+          ${pillH(growth(v.c,v.i))}
+        </div>
+      </div>`).join('')}`;
+
+  document.getElementById('mf-lhdr').innerHTML=`<span class="sm fw6 sub">All Funds</span>${pillH(growth(mfC,mfI))}`;
+
+  document.getElementById('mf-list').innerHTML = D.mutualFunds.map(f=>{
+    const g=growth(f.current,f.invested), p=pnl(f.current,f.invested);
+    const ac=CAT_COLORS[f.category]||'#6366f1';
+    return `
+      <div class="card arow" style="border-left:3px solid ${ac};margin-bottom:10px">
+        <div class="card-p">
+          <div class="frow jbet astart mb3">
+            <div class="f1 minw0 pr2">
+              <div class="sm fw6 white mb2" style="line-height:1.4">${f.name}</div>
+              <div class="frow gap2 wrap">
+                <span class="xs muted">${f.amc}</span>
+                <span class="badge" style="background:${ac}22;color:${ac}">${f.category}</span>
+                ${f.sipActive?'<span class="badge badge-green">● SIP</span>':''}
+              </div>
+            </div>
+            <div class="tr shrink0">
+              <div class="base fw7 mono white">${fmt(f.current)}</div>
+              <div class="xs mono mt2 ${p>=0?'green':'red'}">${p>=0?'+':''}${fmt(p)}</div>
+            </div>
+          </div>
+          <div class="ibox mb3">
+            <div class="grid3">
+              <div><div class="xs muted mb2">Invested</div><div class="sm mono sub fw5">${fmt(f.invested)}</div></div>
+              <div><div class="xs muted mb2">NAV</div><div class="sm mono sub fw5">₹${f.nav}</div></div>
+              <div><div class="xs muted mb2">Units</div><div class="sm mono sub fw5">${f.units.toFixed(1)}</div></div>
+            </div>
+          </div>
+          <div class="frow jbet">
+            <div class="f1" style="padding-right:16px">
+              <div class="pbar"><div class="pfill" style="width:${Math.min(100,Math.max(4,Math.abs(g/2+50))).toFixed(1)}%;background:${p>=0?'#10b981':'#ef4444'}"></div></div>
+            </div>
+            ${pillH(g)}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
-// ─── TAB SWITCHING ─────────────────────────────────────────────────────────
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  btn.classList.add('active');
-  // Render lazily
-  if (name === 'sectors') renderSectors();
-  if (name === 'marketcap') renderMarketCap();
-  if (name === 'holdings') renderHoldings();
+// ══════════════════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════════════════
+let activeTab=0;
+const TABS=['⬡ Summary','◎ Stocks & ETFs','◈ Funds'];
+function initTabs(){
+  document.getElementById('tabBar').innerHTML=TABS.map((t,i)=>
+    `<button class="tbtn${i===0?' act':''}" onclick="goTab(${i})">${t}</button>`).join('');
+}
+function goTab(i){
+  ['p0','p1','p2'].forEach((p,j)=>{ document.getElementById(p).classList.toggle('act',j===i); });
+  document.querySelectorAll('.tbtn').forEach((b,j)=>b.classList.toggle('act',j===i));
+  activeTab=i;
+  if(i===1) renderStocks();
+  if(i===2) renderMF();
 }
 
-// ─── REFRESH ───────────────────────────────────────────────────────────────
-function refreshData() {
-  const btn = document.getElementById('refreshBtn');
-  const overlay = document.getElementById('loadingOverlay');
-  const toast = document.getElementById('toast');
-
-  btn.classList.add('spinning');
+// ══════════════════════════════════════════════════════════
+//  LIVE REFRESH — calls Anthropic API which queries INDmoney MCP
+// ══════════════════════════════════════════════════════════
+async function liveRefresh(){
+  const btn = document.getElementById('rbtn');
+  const overlay = document.getElementById('overlay');
+  const msg = document.getElementById('overlay-msg');
+  btn.classList.add('spin');
   overlay.classList.add('show');
+  msg.textContent = 'Connecting to INDmoney…';
 
-  setTimeout(() => {
-    // Re-render all visible charts
-    renderOverview();
-    const activeTab = document.querySelector('.tab-panel.active').id.replace('tab-', '');
-    if (activeTab === 'sectors') renderSectors();
-    if (activeTab === 'marketcap') renderMarketCap();
-    if (activeTab === 'holdings') renderHoldings();
+  try {
+    msg.textContent = 'Fetching portfolio snapshot…';
 
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: `You are a financial data extractor. Use the INDmoney MCP tools to fetch the user's portfolio data, then return ONLY a valid JSON object (no markdown, no explanation) with this exact structure:
+{
+  "totalCurrent": number,
+  "totalInvested": number,
+  "assets": [{"name":string,"value":number,"invested":number,"color":string}],
+  "sectors": [{"sector":string,"value":number,"ret":number}],
+  "marketCap": [{"name":string,"value":number,"pct":number,"ret":number,"color":string}],
+  "epf": {"balance":number,"employer":number,"employee":number},
+  "esops": {"currentValue":number,"vestedValue":number},
+  "mutualFunds": [{"name":string,"amc":string,"category":string,"invested":number,"current":number,"nav":number,"units":number,"sipActive":boolean}],
+  "indianStocks": [{"name":string,"ticker":string,"cap":string,"value":number,"qty":number}],
+  "etfs": [{"name":string,"ticker":string,"type":string,"value":number,"qty":number}],
+  "usStocks": [{"name":string,"ticker":string,"sector":string,"invested":number,"value":number}]
+}
+Call networth_snapshot first for totals/sectors/marketCap, then networth_holdings with asset_type MF for mutual funds, then IND_STOCK for stocks and ETFs, then US_STOCK for US stocks. Map the response accurately to the JSON structure above. For indianStocks exclude ETFs (those go in etfs array). Use exact values from the API.`,
+        messages: [{ role: 'user', content: 'Fetch my complete INDmoney portfolio data and return it as JSON.' }],
+        mcp_servers: [{ type: 'url', url: 'https://mcp.indmoney.com/mcp', name: 'indmoney' }]
+      })
+    });
+
+    if(!res.ok) throw new Error(`API error ${res.status}`);
+    const data = await res.json();
+
+    // Extract JSON from response
+    const textBlocks = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const jsonMatch = textBlocks.match(/\{[\s\S]*\}/);
+    if(!jsonMatch) throw new Error('No JSON in response');
+
+    const fresh = JSON.parse(jsonMatch[0]);
+
+    // Merge into D
+    if(fresh.totalCurrent) D.snapshot.totalCurrent = fresh.totalCurrent;
+    if(fresh.totalInvested) D.snapshot.totalInvested = fresh.totalInvested;
+    if(fresh.assets?.length) D.snapshot.assets = fresh.assets;
+    if(fresh.sectors?.length) D.snapshot.sectors = fresh.sectors;
+    if(fresh.marketCap?.length) D.snapshot.marketCap = fresh.marketCap;
+    if(fresh.epf) D.snapshot.epf = fresh.epf;
+    if(fresh.esops) D.snapshot.esops = fresh.esops;
+    if(fresh.mutualFunds?.length) D.mutualFunds = fresh.mutualFunds;
+    if(fresh.indianStocks?.length) D.indianStocks = fresh.indianStocks;
+    if(fresh.etfs?.length) D.etfs = fresh.etfs;
+    if(fresh.usStocks?.length) D.usStocks = fresh.usStocks;
+
+    D.meta.lastSync = new Date();
+    showToast('✓ Live data synced from INDmoney');
+
+  } catch(e) {
+    console.error('Refresh error:', e);
+    showToast('⚠ Could not sync live data — showing cached values');
+  } finally {
+    btn.classList.remove('spin');
     overlay.classList.remove('show');
-    btn.classList.remove('spinning');
-
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-  }, 1800);
+    updateSyncTime();
+    // Re-render all tabs
+    renderSummary();
+    if(activeTab===1) renderStocks();
+    if(activeTab===2) renderMF();
+  }
 }
 
-// ─── INIT ──────────────────────────────────────────────────────────────────
-renderOverview();
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.borderColor = msg.startsWith('✓')?'rgba(16,185,129,.3)':'rgba(249,115,22,.3)';
+  t.style.color = msg.startsWith('✓')?'#10b981':'#fb923c';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3200);
+}
+
+function updateSyncTime(){
+  const ts = document.getElementById('refresh-ts');
+  ts.textContent = D.meta.lastSync
+    ? 'Last synced: '+D.meta.lastSync.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
+    : 'Last synced: —';
+}
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+initTabs();
+renderSummary();
 </script>
 </body>
 </html>
+
